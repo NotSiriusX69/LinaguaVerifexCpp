@@ -11,7 +11,7 @@ int main()
 {
     int numbers[5];
 
-    string file_path = "C:/Users/user/Desktop/all/Semester_5/Theory_of_computation/code/LinguaVerifex/LinguaVerifexC++/data";
+    string file_path = "data/data.json";
 
     std::ifstream f(file_path);
 
