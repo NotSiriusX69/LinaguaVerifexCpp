@@ -1,9 +1,10 @@
 #include <string>
+#include <vector>
 
 // Declare Automaton Variables
 //Initialize for now in header file ~ to be taken from json file on cpp startup
-const int nbSymbols = 10;
-const int nbStates = 10;
+const int nbSymbols = 100;
+const int nbStates = 100;
 const int nbTransitions = 20;
 const int nbStatesTerminal = 10;
 
@@ -22,6 +23,6 @@ struct Automat {
     char alphabet[nbSymbols];
     char states[nbStates];
     char q0; //Initial state
-    Transition delta[nbTransitions];
+    std::vector<Transition> delta;
     char statesTerminal[nbStatesTerminal];
 };
