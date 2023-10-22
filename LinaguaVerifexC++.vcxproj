@@ -107,6 +107,7 @@
       <AdditionalIncludeDirectories>C:\Users\user\vcpkg\json\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>
       </DisableSpecificWarnings>
+      <AdditionalHeaderUnitDependencies>%(AdditionalHeaderUnitDependencies)</AdditionalHeaderUnitDependencies>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -139,6 +140,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="JsonManip.h" />
+    <ClInclude Include="JsonManipAutomat.h" />
+    <ClInclude Include="JsonManipAutomatArray.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
