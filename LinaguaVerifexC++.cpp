@@ -1,42 +1,47 @@
-
+//general include
 #include <iostream>
 #include <fstream>
 #include "nlohmann/json.hpp"
 
-using json = nlohmann::json;
+//async include
+#include <future>
+
+//headers include
+#include "JsonManip.h"
+
 using namespace std;
 
 
-int main()
+int main ()
 {
-    int numbers[5];
+	call c;
+	string file_path = "data/trigger.json";
 
-    string file_path = "data/data.json";
+	ifstream f (file_path);
+	json data = json::parse (f);
 
-    std::ifstream f(file_path);
+	future<void> asyncTrigger = async (&readFileOnInit, &c, file_path);
 
-    json data = json::parse(f);
+	//testing response
+	string response;
+	int keep = 0;
+	do
+	{
+		cout << " do you want to send response: ";
+		cin >> response;
+		cout << endl;
+		if (response == "yes") {
+			sendResponse (file_path, data);
+		}
+		else {
+			cout << "no response" << endl;
+		}
 
-    if (data.is_object() && data.find("number") != data.end()) {
-        // Check if "number" exists and is an array
-        if (data["number"].is_array()) {
-            std::vector<int> numberArray = data["number"].get<std::vector<int>>();
+		cout << "keep going: (0 to keep going)";
+		cin >> keep;
+		if (keep != 1 || keep != 0) {
+			keep = 1;
+		}
 
-            // Now, you have the array of integers in numberArray
-            for (const int& element : numberArray) {
-                std::cout << element << " ";
-            }
-            std::cout << std::endl;
-        }
-        else {
-            std::cerr << "\"number\" in the JSON is not an array of integers." << std::endl;
-        }
-    }
-    else {
-        std::cerr << "Invalid JSON format or \"number\" key not found." << std::endl;
-    }
-
-    //std::ofstream o(file_path);
-    //o << setw(4) << data;
-
+	} while (keep == 0);
 }

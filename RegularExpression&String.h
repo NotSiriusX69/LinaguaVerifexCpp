@@ -16,7 +16,7 @@ void convertToChar(string text) {
 	char* text_array = new char[length + 1];
 
 	//copy into the char array
-	strcpy(text_array, text.c_str());
+	//strcpy(text_array, text.c_str());
 
 }
 
