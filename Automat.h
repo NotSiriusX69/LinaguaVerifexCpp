@@ -21,7 +21,7 @@ struct Transition {
 // Automat structure
 struct Automat {
     char alphabet[nbSymbols];
-    char states[nbStates];
+    int states[nbStates];
     char q0; //Initial state
     std::vector<Transition> delta;
     char statesTerminal[nbStatesTerminal];

@@ -12,8 +12,17 @@
 
 using namespace std;
 
-string removeSpaces (string input);
-void reAutomat_init (Automat*, string);
+//function to remove spaces in RE
+string remove_reSpaces (string input);
+//function that contains all logic to initialize an automat based on user RE
+void init_reAutomat (Automat*, string);
+//function that places user input RE into a char array called alphabet and then organizes the transitions between each char
+void organize_reInput (Automat*, string);
+//function that draws the states of the automat
+void calculate_reInputStates (Automat*);
+//function that translates each char into a specific token with an id
+void tokenize_reInput (Automat*, int, char);
+
 
 
 int main ()
@@ -54,8 +63,9 @@ int main ()
 	cout << "Enter your RE: " << endl;
 	getline (cin, re);
 
+	cout << re;
 	Automat re_recogniser;
-	reAutomat_init (&re_recogniser, re);
+	init_reAutomat (&re_recogniser, re);
 
 
 
@@ -63,7 +73,7 @@ int main ()
 
 }
 
-string removeSpaces (string input) {
+string remove_reSpaces (string input) {
 	string result;
 
 	for (char c : input) {
@@ -76,20 +86,41 @@ string removeSpaces (string input) {
 }
 
 
-void reAutomat_init (Automat* autom, string re) {
-
-	//counters that count for any brackets / paranthesis that are open, example: a(  / a[
-	int indented_brackets = 0;
-	int indented_paranthesis = 0;
+void init_reAutomat (Automat* autom, string re) {
 
 	//removing spaces from the input
-	re = removeSpaces (re);
+	re = remove_reSpaces (re);
 
 	autom->q0 = re[0];
 
 	//filling user input (RE) into the alphabet array
-	int alphabet_counter = 0;
+	organize_reInput (autom, re);
 
+	//calculating states and tokenising the input that is filled in the alphabet array
+	calculate_reInputStates (autom);
+
+	// // Debug purpose
+	for (int i = 0; i < autom->delta.size (); i++) {
+		cout << autom->delta[i].label;
+		cout << autom->delta[i].origin;
+		cout << autom->delta[i].target;
+		cout << endl;
+
+		cout << autom->states[i];
+		cout << endl;
+		cout << endl;
+	}
+
+	/*char states[nbStates];					//Del this later
+	Transition delta[nbTransitions];
+	char statesTerminal[nbStatesTerminal];*/
+	//char temp_alphabet[26] = { 'a', 'b' ,'c' ,'d' ,'e' ,'f' ,'g' ,'h' ,'i' ,'j' ,'k' ,'l' ,'m' ,'n' ,'p' ,'q' ,'r' ,'s' ,'t' ,'o' ,'u' ,'v' ,'x' ,'y' , 'z' ,'w' };
+
+
+}
+
+void organize_reInput (Automat* autom, string re) {
+	int alphabet_counter = 0;
 
 	for (int i = 0; i < re.length (); i++) {
 		if (re[i] == ' ') {
@@ -117,25 +148,125 @@ void reAutomat_init (Automat* autom, string re) {
 		}
 		else {
 			transition.origin = re[0];
+			transition.target = re[1];
 		}
 
 		autom->delta.push_back (transition);
 
 		alphabet_counter++;
 	}
+}
 
-	// // Debug purpose
-	for (int i = 0; i < autom->delta.size (); i++) {
-		cout << autom->delta[i].label;
-		cout << autom->delta[i].origin;
-		cout << autom->delta[i].target;
-		cout << endl;
+void calculate_reInputStates (Automat* autom) {
+	int states_counter = 0;
+
+	//counters that count for any brackets / paranthesis that are open, example: a(  / a[
+	int opened_brackets = 0;
+	int opened_paranthesis = 0;
+
+	//calculating initial state value (for the state values and what they represent, reffer to whiteboard drawing)
+	if (isalpha (autom->q0)) {
+		autom->states[0] = 1;
+	}
+	else if (autom->q0 == '(') {
+		autom->states[0] = 2;
+	}
+	else if (autom->q0 == '[') {
+		autom->states[0] = 3;
+	}
+	else {
+		//state -1 indicates error
+		//autom->states[0] = -1;
 	}
 
-	/*char states[nbStates];					//Del this later
-	Transition delta[nbTransitions];
-	char statesTerminal[nbStatesTerminal];*/
-	//char temp_alphabet[26] = { 'a', 'b' ,'c' ,'d' ,'e' ,'f' ,'g' ,'h' ,'i' ,'j' ,'k' ,'l' ,'m' ,'n' ,'p' ,'q' ,'r' ,'s' ,'t' ,'o' ,'u' ,'v' ,'x' ,'y' , 'z' ,'w' };
 
+	for (int i = 0; i < autom->delta.size (); i++) {
+		//filling on each iteration the values or each delta
+		char origin = autom->delta[i].origin;
+		char label = autom->delta[i].label;
+		char target = autom->delta[i].target;
+
+		switch (autom->states[states_counter]) {
+			//alphabet char entered: [a-z]
+		case 1: {
+			if (isalpha (target)) {
+				autom->states[states_counter + 1] = 1;
+			}
+			else if (target == '(') {
+				autom->states[states_counter + 1] = 2;
+			}
+			else if (target == '[') {
+				autom->states[states_counter + 1] = 3;
+			}
+			else if (target == ')') {
+				autom->states[states_counter + 1] = 5;
+			}
+			else if (target == ']') {
+				autom->states[states_counter + 1] = 6;
+			}
+
+		}
+			  break;
+			  //paranthesis entered: (
+		case 2: {
+			opened_paranthesis++;
+			if (isalpha (target)) {
+				autom->states[states_counter + 1] = 1;
+			}
+			else if (target == '(') {
+				autom->states[states_counter + 1] = 2;
+			}
+			else if (target == '[') {
+				autom->states[states_counter + 1] = 3;
+			}
+
+		}
+			  break;
+			  //brackets entered: [
+		case 3: {
+			opened_brackets++;
+			if (isdigit (target)) {
+				autom->states[states_counter + 1] = 4;
+			}
+			else if (target == '[') {
+				autom->states[states_counter + 1] = 3;
+			}
+		}
+			  break;
+
+			  //digit entered
+		case 4: {
+			if (target == '-') {
+				autom->states[states_counter + 1] = 1;
+			}
+		}
+			  break;
+
+			  //paranthesis closed
+		case 5: {
+			opened_paranthesis--;
+
+		}
+			  break;
+			  //brackets closed
+		case 6: {
+			opened_brackets--;
+		}
+			  break;
+
+		default: {
+
+		}
+			   break;
+
+
+		}
+
+
+		states_counter++;
+	}
+}
+
+void tokenize_reInput (Automat*, int, char) {
 
 }
