@@ -22,6 +22,8 @@ void organize_reInput (Automat*, string);
 void calculate_reInputStates (Automat*);
 //function that translates each char into a specific token with an id
 void tokenize_reInput (Automat*, int, char);
+//function that checks if the input is equal to one of the specified regex elements
+bool checkIfSymbol (char, string);
 
 
 
@@ -100,12 +102,14 @@ void init_reAutomat (Automat* autom, string re) {
 	calculate_reInputStates (autom);
 
 	// // Debug purpose
+	cout << "Label - Origin - Target:" << endl;
 	for (int i = 0; i < autom->delta.size (); i++) {
-		cout << autom->delta[i].label;
-		cout << autom->delta[i].origin;
-		cout << autom->delta[i].target;
+		cout << autom->delta[i].label << "\t";
+		cout << autom->delta[i].origin << "\t";
+		cout << autom->delta[i].target << "\t";
 		cout << endl;
 
+		cout << "State: " << endl;
 		cout << autom->states[i];
 		cout << endl;
 		cout << endl;
@@ -157,6 +161,17 @@ void organize_reInput (Automat* autom, string re) {
 	}
 }
 
+bool checkIfSymbol (char input, string regex) {
+
+	for (char c : regex) {
+		if (c == input) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
 void calculate_reInputStates (Automat* autom) {
 	int states_counter = 0;
 
@@ -198,11 +213,14 @@ void calculate_reInputStates (Automat* autom) {
 			else if (target == '[') {
 				autom->states[states_counter + 1] = 3;
 			}
-			else if (target == ')') {
+			else if (target == ')' && (isalpha (label) || checkIfSymbol (label, "*+")) && opened_paranthesis > 0) {
 				autom->states[states_counter + 1] = 5;
 			}
-			else if (target == ']') {
+			else if (target == ']' && isdigit (label) && opened_brackets > 0) {
 				autom->states[states_counter + 1] = 6;
+			}
+			else if (checkIfSymbol (target, "*+")) {
+				autom->states[states_counter + 1] = 7;
 			}
 
 		}
@@ -228,16 +246,22 @@ void calculate_reInputStates (Automat* autom) {
 			if (isdigit (target)) {
 				autom->states[states_counter + 1] = 4;
 			}
-			else if (target == '[') {
-				autom->states[states_counter + 1] = 3;
-			}
 		}
 			  break;
 
-			  //digit entered
+			  //digit entered or - entered (for letters, do same but with isalpha)
 		case 4: {
-			if (target == '-') {
-				autom->states[states_counter + 1] = 1;
+			if ((target == '-' && isdigit (label)) && opened_brackets > 0) {
+				autom->states[states_counter + 1] = 4;
+			}
+			else if (label == '-' && opened_brackets > 0 && isdigit (target)) {
+				autom->states[states_counter + 1] = 4;
+			}
+			else if (isdigit (label) && opened_brackets > 0 && target != ']') {
+				autom->states[states_counter + 1] = 4;
+			}
+			else if (target == ']' && isdigit (label) && opened_brackets > 0) {
+				autom->states[states_counter + 1] = 6;
 			}
 		}
 			  break;
@@ -245,17 +269,61 @@ void calculate_reInputStates (Automat* autom) {
 			  //paranthesis closed
 		case 5: {
 			opened_paranthesis--;
+			if (isalpha (target)) {
+				autom->states[states_counter + 1] = 1;
+			}
+			else if (target == '(') {
+				autom->states[states_counter + 1] = 2;
+			}
+			else if (target == '[') {
+				autom->states[states_counter + 1] = 3;
+			}
+			else if (checkIfSymbol (target, "*+")) {
+				autom->states[states_counter + 1] = 7;
+			}
 
 		}
 			  break;
 			  //brackets closed
 		case 6: {
 			opened_brackets--;
+			opened_paranthesis--;
+			if (isalpha (target)) {
+				autom->states[states_counter + 1] = 1;
+			}
+			else if (target == '(') {
+				autom->states[states_counter + 1] = 2;
+			}
+			else if (target == '[') {
+				autom->states[states_counter + 1] = 3;
+			}
+			else if (checkIfSymbol (target, "*+")) {
+				autom->states[states_counter + 1] = 7;
+			}
 		}
 			  break;
 
-		default: {
+			  //number repetitions specifier entered (* or +)
+		case 7: {
+			if (isalpha (target)) {
+				autom->states[states_counter + 1] = 1;
+			}
+			else if (target == ')' && (isalpha (label) || checkIfSymbol (label, "*+")) && opened_paranthesis > 0) {
+				autom->states[states_counter + 1] = 5;
+			}
+			else if (target == '(') {
+				autom->states[states_counter + 1] = 2;
+			}
+			else if (target == '[') {
+				autom->states[states_counter + 1] = 3;
+			}
 
+		}
+			  break;
+
+
+		default: {
+			cout << "Error" << endl;
 		}
 			   break;
 
