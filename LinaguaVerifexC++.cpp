@@ -14,14 +14,19 @@ using namespace std;
 
 //function to remove spaces in RE
 string remove_reSpaces (string input);
+
 //function that contains all logic to initialize an automat based on user RE
 void init_reAutomat (Automat*, string);
+
 //function that places user input RE into a char array called alphabet and then organizes the transitions between each char
 void organize_reInput (Automat*, string);
+
 //function that draws the states of the automat
 void calculate_reInputStates (Automat*);
+
 //function that translates each char into a specific token with an id
 void tokenize_reInput (Automat*, int, char);
+
 //function that checks if the input is equal to one of the specified regex elements
 bool checkIfSymbol (char, string);
 
@@ -127,9 +132,9 @@ void organize_reInput (Automat* autom, string re) {
 	int alphabet_counter = 0;
 
 	for (int i = 0; i < re.length (); i++) {
-		if (re[i] == ' ') {
-			continue;
-		}
+		//if (re[i] == ' ') {
+		//	continue;
+		//}
 
 		//Adding each char from user input into alphabet
 		autom->alphabet[alphabet_counter] = re[i];
@@ -180,7 +185,7 @@ void calculate_reInputStates (Automat* autom) {
 	int opened_paranthesis = 0;
 
 	//calculating initial state value (for the state values and what they represent, reffer to whiteboard drawing)
-	if (isalpha (autom->q0)) {
+	if (isalpha (autom->q0)) { //(a*b)ab  [0-9] [a-z]
 		autom->states[0] = 1;
 	}
 	else if (autom->q0 == '(') {
