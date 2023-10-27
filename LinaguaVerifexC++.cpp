@@ -9,6 +9,8 @@
 //headers include
 #include "JsonManip.h"
 #include "Automat.h"
+#include "utilities.h"
+
 
 using namespace std;
 
@@ -30,22 +32,6 @@ void init_reTransitions (Automat* autom, string re);
 
 //function that translates each regex into a specific token with an id
 void tokenize_reInput (Automat*, int, char);
-
-
-
-//Tools:
-
-//function that checks if the input is equal to one of the specified regex elements
-bool checkIfSymbol (char, string);
-
-//function that converts a transition vector to array
-template <typename T>
-T* convert_vectorToArr (const std::vector<T>& transVect);
-
-//function that converts a transition array to vector
-template <typename T, size_t N>
-std::vector<T> convert_arrToVector (T (&transArr)[N]);
-
 
 
 

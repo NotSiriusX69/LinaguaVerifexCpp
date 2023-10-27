@@ -142,6 +142,7 @@
     <ClInclude Include="JsonManip.h" />
     <ClInclude Include="JsonManipAutomat.h" />
     <ClInclude Include="JsonManipAutomatArray.h" />
+    <ClInclude Include="utilities.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
