@@ -18,17 +18,26 @@ string remove_reSpaces (string input);
 //function that contains all logic to initialize an automat based on user RE
 void init_reAutomat (Automat*, string);
 
-//function that places user input RE into a char array called alphabet and then organizes the transitions between each char
-void organize_reInput (Automat*, string);
+//function that places user input RE into a char array called alphabet
+void init_automatAlphabet (Automat*, string);
 
-//function that draws the states of the automat
-void calculate_reInputStates (Automat*);
+//function that converts the alphabet of automat into multiple blocks of chars and puts them in transitions based on user input
+//of states and transitions
+void init_reToArray (Automat*);
 
-//function that translates each char into a specific token with an id
+//function that adds the transitions
+void init_reTransitions (Automat* autom, string re);
+
+//function that translates each regex into a specific token with an id
 void tokenize_reInput (Automat*, int, char);
+
+
+
+//Tools:
 
 //function that checks if the input is equal to one of the specified regex elements
 bool checkIfSymbol (char, string);
+
 
 
 
@@ -74,10 +83,6 @@ int main ()
 	Automat re_recogniser;
 	init_reAutomat (&re_recogniser, re);
 
-
-
-
-
 }
 
 string remove_reSpaces (string input) {
@@ -98,13 +103,13 @@ void init_reAutomat (Automat* autom, string re) {
 	//removing spaces from the input
 	re = remove_reSpaces (re);
 
-	autom->q0 = re[0];
+	//autom->q0 = re[0];
 
 	//filling user input (RE) into the alphabet array
-	organize_reInput (autom, re);
+	init_automatAlphabet (autom, re);
 
 	//calculating states and tokenising the input that is filled in the alphabet array
-	calculate_reInputStates (autom);
+	init_reToArray (autom);
 
 	// // Debug purpose
 	cout << "Label - Origin - Target:" << endl;
@@ -128,7 +133,7 @@ void init_reAutomat (Automat* autom, string re) {
 
 }
 
-void organize_reInput (Automat* autom, string re) {
+void init_automatAlphabet (Automat* autom, string re) {
 	int alphabet_counter = 0;
 
 	for (int i = 0; i < re.length (); i++) {
@@ -140,27 +145,6 @@ void organize_reInput (Automat* autom, string re) {
 		autom->alphabet[alphabet_counter] = re[i];
 		cout << autom->alphabet[alphabet_counter] << endl;
 
-
-		//Adding the transitions
-		Transition transition;
-
-		transition.label = re[i];
-
-		//has to be done so its not out of bounds
-		if (alphabet_counter != 0) {
-			transition.origin = autom->alphabet[alphabet_counter - 1];
-			//Tyo add the last target because the for loop will never get to it
-			if (i + 1 <= re.length () - 1) {
-				transition.target = re[i + 1];
-			}
-
-		}
-		else {
-			transition.origin = re[0];
-			transition.target = re[1];
-		}
-
-		autom->delta.push_back (transition);
 
 		alphabet_counter++;
 	}
@@ -177,21 +161,23 @@ bool checkIfSymbol (char input, string regex) {
 	return false;
 }
 
-void calculate_reInputStates (Automat* autom) {
+void init_reToArray (Automat* autom) {
 	int states_counter = 0;
 
 	//counters that count for any brackets / paranthesis that are open, example: a(  / a[
 	int opened_brackets = 0;
 	int opened_paranthesis = 0;
 
+	char q0 = autom->q0;
+
 	//calculating initial state value (for the state values and what they represent, reffer to whiteboard drawing)
-	if (isalpha (autom->q0)) { //(a*b)ab  [0-9] [a-z]
+	if (isalpha (q0)) { //(a*b)ab  [0-9] [a-z]
 		autom->states[0] = 1;
 	}
-	else if (autom->q0 == '(') {
+	else if (q0 == '(') {
 		autom->states[0] = 2;
 	}
-	else if (autom->q0 == '[') {
+	else if (q0 == '[') {
 		autom->states[0] = 3;
 	}
 	else {
@@ -340,6 +326,29 @@ void calculate_reInputStates (Automat* autom) {
 	}
 }
 
-void tokenize_reInput (Automat*, int, char) {
+void tokenize_reInput (Automat* autom, int, char) {
 
+}
+
+void init_reTransitions (Automat* autom, string re) {
+	//Adding the transitions
+	Transition transition;
+
+	transition.label = re[i];
+
+	//has to be done so its not out of bounds
+	if (alphabet_counter != 0) {
+		transition.origin = autom->alphabet[alphabet_counter - 1];
+		//Tyo add the last target because the for loop will never get to it
+		if (i + 1 <= re.length () - 1) {
+			transition.target = re[i + 1];
+		}
+
+	}
+	else {
+		transition.origin = re[0];
+		transition.target = re[1];
+	}
+
+	autom->delta.push_back (transition);
 }

@@ -104,7 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\D_Drive\Data_Saves\1-Projects\Visual Studio Projects %28C++%29\Lingua-Verifex\include;C:\Users\user\vcpkg\json\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\D_Drive\Data_Saves\1-Projects\Visual Studio Projects %28C++%29\Lingua-Verifex\include;C:\Users\james\Downloads\Compressed\Prog\C++\libs\Json;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>
       </DisableSpecificWarnings>
       <AdditionalHeaderUnitDependencies>%(AdditionalHeaderUnitDependencies)</AdditionalHeaderUnitDependencies>
