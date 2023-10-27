@@ -14,9 +14,6 @@
 
 using namespace std;
 
-//function to remove spaces in RE
-string remove_reSpaces (string input);
-
 //function that contains all logic to initialize an automat based on user RE
 void init_reAutomat (Automat*, string);
 
@@ -90,18 +87,6 @@ int main ()
 
 }
 
-string remove_reSpaces (string input) {
-	string result;
-
-	for (char c : input) {
-		if (c != ' ') {
-			result += c;
-		}
-	}
-
-	return result;
-}
-
 
 void init_reAutomat (Automat* autom, string re) {
 
@@ -155,16 +140,6 @@ void init_automatAlphabet (Automat* autom, string re) {
 	}
 }
 
-bool checkIfSymbol (char input, string regex) {
-
-	for (char c : regex) {
-		if (c == input) {
-			return true;
-		}
-	}
-
-	return false;
-}
 
 void init_reToArray (Automat* autom) {
 	int states_counter = 0;
@@ -365,25 +340,4 @@ void init_reTransitions (Automat* autom, string re) {
 	}
 }
 
-template <typename T>
-T* convert_vectorToArr (const std::vector<T>& transVect) {
-	T* newArr = new T[transVect.size ()];
 
-	for (size_t i = 0; i < transVect.size (); i++) {
-		newArr[i] = transVect[i];
-	}
-
-	return newArr;
-}
-
-
-template <typename T, size_t N>
-std::vector<T> convert_arrToVector (T (&transArr)[N]) {
-	std::vector<T> newArr;
-
-	for (size_t i = 0; i < N; i++) {
-		newArr.push_back (transArr[i]);
-	}
-
-	return newArr;
-}
