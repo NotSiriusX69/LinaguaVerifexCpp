@@ -15,20 +15,33 @@
 using namespace std;
 
 //function that contains all logic to initialize an automat based on user RE
-void init_reAutomat (Automat*, string);
+void init_reAutomat (Automat*, string, vector<Transition>*);
 
 //function that places user input RE into a char array called alphabet
 void init_automatAlphabet (Automat*, string);
 
 //function that converts the alphabet of automat into multiple blocks of chars and puts them in transitions based on user input
 //of states and transitions
-void init_reToArray (Automat*);
+void init_reToTransitionsBlocks (Automat*, vector<Transition>*);
 
 //function that adds the transitions
 void init_reTransitions (Automat* autom, string re);
 
 //function that translates each regex into a specific token with an id
 void tokenize_reInput (Automat*, int, char);
+
+
+//Functions that get NFA, DFA, TREE out of user re:
+
+//NFA
+void init_reNFA (NFA*);
+
+//DFA
+void init_reDFA (DFA*);
+
+//TREE
+void init_reTREE (TREE*);
+
 
 
 
@@ -72,23 +85,27 @@ int main ()
 
 	cout << re;
 	Automat re_recogniser;
-	//init_reAutomat (&re_recogniser, re);
+	vector<Transition> allTransitions;
+
+	init_reAutomat (&re_recogniser, re, &allTransitions);
+
+
 
 
 
 	//Testing functions: convert_vectorToArr() and convert_arrToVector()
 
-	init_reTransitions (&re_recogniser, "HelloWorld");
+	/*init_reTransitions (&re_recogniser, "HelloWorld");
 	cout << re_recogniser.delta[0].regexBlock;
 
 	Transition* transArr = convert_vectorToArr (re_recogniser.delta);
 
-	cout << transArr[0].regexBlock;
+	cout << transArr[0].regexBlock;*/
 
 }
 
 
-void init_reAutomat (Automat* autom, string re) {
+void init_reAutomat (Automat* autom, string re, vector<Transition>* transitionsArr) {
 
 	//removing spaces from the input
 	re = remove_reSpaces (re);
@@ -99,7 +116,7 @@ void init_reAutomat (Automat* autom, string re) {
 	init_automatAlphabet (autom, re);
 
 	//calculating states and tokenising the input that is filled in the alphabet array
-	init_reToArray (autom);
+	init_reToTransitionsBlocks (autom, transitionsArr);
 
 	// // Debug purpose
 	cout << "Label - Origin - Target:" << endl;
@@ -141,8 +158,7 @@ void init_automatAlphabet (Automat* autom, string re) {
 }
 
 
-void init_reToArray (Automat* autom) {
-	int states_counter = 0;
+void init_reToTransitionsBlocks (Automat* autom, vector<Transition>* transitionsArr) {
 
 	//counters that count for any brackets / paranthesis that are open, example: a(  / a[
 	int opened_brackets = 0;
@@ -150,29 +166,23 @@ void init_reToArray (Automat* autom) {
 
 	char q0 = autom->q0;
 
-	//calculating initial state value (for the state values and what they represent, reffer to whiteboard drawing)
-	if (isalpha (q0)) { //(a*b)ab  [0-9] [a-z]
-		autom->states[0] = 1;
-	}
-	else if (q0 == '(') {
-		autom->states[0] = 2;
-	}
-	else if (q0 == '[') {
-		autom->states[0] = 3;
-	}
-	else {
-		//state -1 indicates error
-		//autom->states[0] = -1;
-	}
+	//state that we should enter in the upcoming iteration
+	int enterState = 0;
 
-
-	for (int i = 0; i < autom->delta.size (); i++) {
+	for (int i = 0; i < autom->alphabet.size(); i++) {
 		//filling on each iteration the values or each delta
-		char origin = autom->delta[i].origin;
-		char label = 'k';
-		char target = autom->delta[i].target;
+		if (i > 0) {
+			char prevChar = autom->alphabet[i - 1];
+		}
 
-		switch (autom->states[states_counter]) {
+		char currentChar = 'k';
+		if (i < autom->alphabet.size () - 1) {
+			char nextChar = autom->alphabet[i + 1];
+		}
+
+
+
+		switch (enterState) {
 			//alphabet char entered: [a-z]
 		case 1: {
 			if (isalpha (target)) {

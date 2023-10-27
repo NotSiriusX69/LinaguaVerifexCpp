@@ -18,7 +18,6 @@ struct Transition {
 	std::string regexBlock;
 	char target;
 
-
 	std::string regexToken;
 
 	//user can choose to write it or not, and if he writes it, then he can infinitely continue
@@ -32,9 +31,43 @@ struct Transition {
 
 };
 
+//This struct is the main one that holds everything (check project notes UI logic)
+struct RE {
+	std::string re;
+	std::vector<char> alphabet;
+
+	Automat* autom;
+	NFA* nfa;
+	DFA* dfa;
+	TREE* tree;
+};
+
 // Automat structure
 struct Automat {
-	char alphabet[nbSymbols];
+	int states[nbStates];
+	char q0; //Initial state
+	std::vector<Transition> delta;
+	char statesTerminal[nbStatesTerminal];
+};
+
+// NFA structure
+struct NFA {
+	int states[nbStates];
+	char q0; //Initial state
+	std::vector<Transition> delta;
+	char statesTerminal[nbStatesTerminal];
+};
+
+// DFA structure
+struct DFA {
+	int states[nbStates];
+	char q0; //Initial state
+	std::vector<Transition> delta;
+	char statesTerminal[nbStatesTerminal];
+};
+
+// TREE structure
+struct TREE {
 	int states[nbStates];
 	char q0; //Initial state
 	std::vector<Transition> delta;
