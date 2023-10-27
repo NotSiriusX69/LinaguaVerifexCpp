@@ -39,10 +39,12 @@ void tokenize_reInput (Automat*, int, char);
 bool checkIfSymbol (char, string);
 
 //function that converts a transition vector to array
-Transition* convert_vectorToArr (std::vector<Transition>);
+template <typename T>
+T* convert_vectorToArr (const std::vector<T>& transVect);
 
 //function that converts a transition array to vector
-std::vector<Transition> convert_arrToVector (Transition*);
+template <typename T, size_t N>
+std::vector<T> convert_arrToVector (T (&transArr)[N]);
 
 
 
@@ -87,18 +89,18 @@ int main ()
 
 	cout << re;
 	Automat re_recogniser;
-	init_reAutomat (&re_recogniser, re);
+	//init_reAutomat (&re_recogniser, re);
 
 
 
 	//Testing functions: convert_vectorToArr() and convert_arrToVector()
 
-	/*init_reTransitions (&re_recogniser, "HelloWorld");
+	init_reTransitions (&re_recogniser, "HelloWorld");
 	cout << re_recogniser.delta[0].regexBlock;
 
 	Transition* transArr = convert_vectorToArr (re_recogniser.delta);
 
-	cout << transArr[0].regexBlock;*/
+	cout << transArr[0].regexBlock;
 
 }
 
@@ -377,20 +379,25 @@ void init_reTransitions (Automat* autom, string re) {
 	}
 }
 
-Transition* convert_vectorToArr (std::vector<Transition> transVect) {
-	Transition* newArr = new Transition[transVect.size ()];
+template <typename T>
+T* convert_vectorToArr (const std::vector<T>& transVect) {
+	T* newArr = new T[transVect.size ()];
 
-	for (int i = 0; i < transVect.size (); i++) {
+	for (size_t i = 0; i < transVect.size (); i++) {
 		newArr[i] = transVect[i];
 	}
+
 	return newArr;
 }
 
-std::vector<Transition> convert_arrToVector (Transition transArr[], int size) {
-	std::vector<Transition> newArr;
 
-	for (int i = 0; i < size; i++) {
+template <typename T, size_t N>
+std::vector<T> convert_arrToVector (T (&transArr)[N]) {
+	std::vector<T> newArr;
+
+	for (size_t i = 0; i < N; i++) {
 		newArr.push_back (transArr[i]);
 	}
+
 	return newArr;
 }
