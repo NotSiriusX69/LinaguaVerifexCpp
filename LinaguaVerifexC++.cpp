@@ -38,6 +38,12 @@ void tokenize_reInput (Automat*, int, char);
 //function that checks if the input is equal to one of the specified regex elements
 bool checkIfSymbol (char, string);
 
+//function that converts a transition vector to array
+Transition* convert_vectorToArr (std::vector<Transition>);
+
+//function that converts a transition array to vector
+std::vector<Transition> convert_arrToVector (Transition*);
+
 
 
 
@@ -83,6 +89,17 @@ int main ()
 	Automat re_recogniser;
 	init_reAutomat (&re_recogniser, re);
 
+
+
+	//Testing functions: convert_vectorToArr() and convert_arrToVector()
+
+	/*init_reTransitions (&re_recogniser, "HelloWorld");
+	cout << re_recogniser.delta[0].regexBlock;
+
+	Transition* transArr = convert_vectorToArr (re_recogniser.delta);
+
+	cout << transArr[0].regexBlock;*/
+
 }
 
 string remove_reSpaces (string input) {
@@ -114,7 +131,7 @@ void init_reAutomat (Automat* autom, string re) {
 	// // Debug purpose
 	cout << "Label - Origin - Target:" << endl;
 	for (int i = 0; i < autom->delta.size (); i++) {
-		cout << autom->delta[i].label << "\t";
+		cout << autom->delta[i].regexBlock << "\t";
 		cout << autom->delta[i].origin << "\t";
 		cout << autom->delta[i].target << "\t";
 		cout << endl;
@@ -189,7 +206,7 @@ void init_reToArray (Automat* autom) {
 	for (int i = 0; i < autom->delta.size (); i++) {
 		//filling on each iteration the values or each delta
 		char origin = autom->delta[i].origin;
-		char label = autom->delta[i].label;
+		char label = 'k';
 		char target = autom->delta[i].target;
 
 		switch (autom->states[states_counter]) {
@@ -330,25 +347,50 @@ void tokenize_reInput (Automat* autom, int, char) {
 
 }
 
+//to fix later
 void init_reTransitions (Automat* autom, string re) {
 	//Adding the transitions
-	Transition transition;
+	int alphabet_counter = 0;
 
-	transition.label = re[i];
+	for (int i = 0; i < re.length (); i++) {
+		Transition transition;
 
-	//has to be done so its not out of bounds
-	if (alphabet_counter != 0) {
-		transition.origin = autom->alphabet[alphabet_counter - 1];
-		//Tyo add the last target because the for loop will never get to it
-		if (i + 1 <= re.length () - 1) {
-			transition.target = re[i + 1];
+		transition.regexBlock = re[i];
+
+		//has to be done so its not out of bounds
+		if (alphabet_counter != 0) {
+			transition.origin = autom->alphabet[alphabet_counter - 1];
+			//Tyo add the last target because the for loop will never get to it
+			if (i + 1 <= re.length () - 1) {
+				transition.target = re[i + 1];
+			}
+
+		}
+		else {
+			transition.origin = re[0];
+			transition.target = re[1];
 		}
 
-	}
-	else {
-		transition.origin = re[0];
-		transition.target = re[1];
-	}
+		autom->delta.push_back (transition);
 
-	autom->delta.push_back (transition);
+		alphabet_counter++;
+	}
+}
+
+Transition* convert_vectorToArr (std::vector<Transition> transVect) {
+	Transition* newArr = new Transition[transVect.size ()];
+
+	for (int i = 0; i < transVect.size (); i++) {
+		newArr[i] = transVect[i];
+	}
+	return newArr;
+}
+
+std::vector<Transition> convert_arrToVector (Transition transArr[], int size) {
+	std::vector<Transition> newArr;
+
+	for (int i = 0; i < size; i++) {
+		newArr.push_back (transArr[i]);
+	}
+	return newArr;
 }
