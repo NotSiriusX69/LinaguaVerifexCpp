@@ -15,7 +15,7 @@
 using namespace std;
 
 //function that contains all logic to initialize an automat based on user RE
-void init_reAutomat (Automat*, string, vector<Transition>*);
+bool init_Automat (Automat*, vector<char>);
 
 //function that places user input RE into a char array called alphabet
 void init_automatAlphabet (Automat*, string);
@@ -31,22 +31,48 @@ void init_reTransitions (Automat* autom, string re);
 void tokenize_reInput (Automat*, int, char);
 
 
-//Functions that get NFA, DFA, TREE out of user re:
+//All automats inits
 
-//NFA
-void init_reNFA (NFA*);
+//Object random name
+bool init_object (Automat*, vector<char>*);//
 
-//DFA
-void init_reDFA (DFA*);
+//conditionals
+bool init_if (Automat*, vector<char>);
+bool init_else (Automat*, vector<char>);
+bool init_switch (Automat*, vector<char>);
 
-//TREE
-void init_reTREE (TREE*);
+//loops
+bool init_for (Automat*, vector<char>);
+bool init_while (Automat*, vector<char>);
+bool init_doWhile (Automat*, vector<char>);
 
+//vars
+bool init_int (Automat*, vector<char>*);//
+bool init_intNb (Automat*, vector<char>*);//
+bool init_double (Automat*, vector<char>*);//
+bool init_doubleNb (Automat*, vector<char>*);//
+bool init_float (Automat*, vector<char>*);//
+bool init_floatNb (Automat*, vector<char>*);//
+bool init_char (Automat*, vector<char>*);//
+bool init_charNb (Automat*, vector<char>*, bool);//
+
+bool init_string (Automat*, vector<char>*);//
+bool init_stringNb (Automat*, vector<char>*, bool);//
+
+bool init_main (Automat*, vector<char>);
+bool init_array (Automat*, vector<char>);
+
+//functions
+bool init_static (Automat*, vector<char>);
+bool init_public (Automat*, vector<char>);
+bool init_private (Automat*, vector<char>);
+bool init_void (Automat*, vector<char>);
 
 
 
 int main ()
 {
+
 	//call c;
 	//string file_path = "data/trigger.json";
 
@@ -78,16 +104,32 @@ int main ()
 
 	//} while (keep == 0);
 
+	if (int i = 0 < 9) {
+		cout << "Its smaller";
+	}
+
 	string re;
 
-	cout << "Enter your RE: " << endl;
+	cout << "Enter your c++ code to convert to java: " << endl;
 	getline (cin, re);
 
 	cout << re;
-	Automat re_recogniser;
-	vector<Transition> allTransitions;
 
-	init_reAutomat (&re_recogniser, re, &allTransitions);
+	//removing spaces from the input
+	std::vector<char> newRe = convert_stringToVector (re);
+
+	Automat re_recogniser[100];
+
+	bool test = init_Automat (re_recogniser, newRe);
+
+	if (test) {
+		cout << "AVailable language!" << endl;
+	}
+	else {
+		cout << "Not available language!" << endl;
+	}
+
+	//init_Automat (re_recogniser, &re);
 
 
 
@@ -105,21 +147,712 @@ int main ()
 }
 
 
-void init_reAutomat (Automat* autom, string re, vector<Transition>* transitionsArr) {
+bool init_object (Automat* au, vector<char>* input) {
 
-	//removing spaces from the input
-	re = remove_reSpaces (re);
+	int state = 0;
+	char c;
 
-	//autom->q0 = re[0];
+	for (int i = 0; i < input->size (); i++) {
+		c = (*input)[i];
+		input->erase (input->begin ());
 
-	//filling user input (RE) into the alphabet array
-	init_automatAlphabet (autom, re);
+		switch (state) {
 
-	//calculating states and tokenising the input that is filled in the alphabet array
-	init_reToTransitionsBlocks (autom, transitionsArr);
+		case 0: {
+			if (isalpha(c)) {
+				state = 1;
+			}
+			else {
+				return false;
+			}
+		}
+			  break;
+		case 1: {
+			if (isalpha (c) || isdigit (c)) {
+				state = 1;
+			}
+			else if(c== ';') {
+				return true;
+			}
+			else if(c== ' ') {
+				return false;
+			}
 
+		}
+			  break;
+		}
+	}
+	return true;
+
+}
+
+
+bool init_int (Automat* au, vector<char>* input) {
+
+	int state = 0;
+	char c;
+
+	for (int i = 0; i < input->size(); i++) {
+		c = (*input)[i];
+		input->erase (input->begin ());
+		
+
+		switch (state) {
+
+		case 0: {
+			if (c == 'i') {
+				state = 1;
+
+			}
+			else {
+				return false;
+			}
+
+		}
+			  break;
+		case 1: {
+			if (c == 'n') {
+				state = 2;
+			}
+			else {
+				return false;
+			}
+
+		}
+			  break;
+		case 2: {
+			if (c == 't') {
+				state = 3;
+				return true;
+			}
+			else {
+				return false;
+			}
+
+		}
+			  break;
+		}
+		i--;
+	}
+
+	
+}
+
+bool init_intNb (Automat* au, vector<char>* input) {
+
+	int state = 0;
+	char d;
+
+	for (int i = 0; i < input->size (); i++) {
+		d = (*input)[i];
+		input->erase (input->begin ());
+
+		switch (state) {
+
+		case 0: {
+			if (isdigit (d)) {
+				state = 0;
+			}
+			else if (d == ';') {
+				return true;
+			}
+			else {
+				return false;
+			}
+
+		}
+			  break;
+		
+		}
+	}
+	return false;
+
+}
+
+bool init_floatNb (Automat* au, vector<char>* input) {
+
+	int state = 0;
+	char c;
+	int digits_counter = 0;
+
+	for (int i = 0; i < input->size (); i++) {
+		c = (*input)[i];
+		input->erase (input->begin ());
+
+		switch (state) {
+
+		case 0: {
+			if (isdigit(c)) {
+				state = 1;
+			}
+			else {
+				return false;
+			}
+
+		}
+			  break;
+		case 1: {
+			if (isdigit(c)) {
+				state = 1;
+			}
+			else if (c == '.') {
+				state = 2;
+			}
+			else {
+				return false;
+			}
+
+		}
+			  break;
+		case 2: {
+			if (isdigit(c)) {
+				state = 2;
+			}
+			else if (c == ';') {
+				return true;
+			}
+			else if (digits_counter + 1 > 7) {
+				return false;
+			}
+			else {
+				return false;
+			}
+		}
+			  break;
+		}
+
+		digits_counter++;
+	}
+
+	return true;
+
+
+}
+
+bool init_float (Automat* au, vector<char>* input) {
+
+	int state = 0;
+	char c;
+
+	for (int i = 0; i < input->size (); i++) {
+		c = (*input)[i];
+		input->erase (input->begin ());
+
+		switch (state) {
+
+		case 0: {
+			if (c == 'f') {
+				state = 1;
+
+			}
+			else {
+				return false;
+			}
+
+		}
+			  break;
+		case 1: {
+			if (c == 'l') {
+				state = 2;
+			}
+			else {
+				return false;
+			}
+
+		}
+			  break;
+		case 2: {
+			if (c == 'o') {
+				state = 3;
+			}
+			else {
+				return false;
+			}
+
+		}
+			  break;
+
+		case 3: {
+			if (c == 'a') {
+				state = 4;
+			}
+			else {
+				return false;
+			}
+
+		}
+			  break;
+
+		case 4: {
+			if (c == 't') {
+				state = 4;
+				return true;
+			}
+			else {
+				return false;
+			}
+
+		}
+			  break;
+
+		}
+	}
+
+}
+
+bool init_doubleNb (Automat* au, vector<char>* input) {
+
+	int state = 0;
+	char c;
+	int digits_counter = 0;
+
+	for (int i = 0; i < input->size (); i++) {
+		c = (*input)[i];
+		input->erase (input->begin ());
+
+		switch (state) {
+
+		case 0: {
+			if (isdigit (c)) {
+				state = 1;
+			}
+			else {
+				return false;
+			}
+
+		}
+			  break;
+		case 1: {
+			if (isdigit (c)) {
+				state = 1;
+			}
+			else if (c == '.') {
+				state = 2;
+			}
+			else {
+				return false;
+			}
+
+		}
+			  break;
+		case 2: {
+			if (isdigit (c)) {
+				state = 2;
+			}
+			else if (c == ';') {
+				return true;
+			}
+			else if (digits_counter + 1 > 15) {
+				return false;
+			}
+			else {
+				return false;
+			}
+		}
+			  break;
+		}
+
+		digits_counter++;
+	}
+
+	return true;
+
+
+}
+
+bool init_double (Automat* au, vector<char>* input) {
+
+	int state = 0;
+	char c;
+
+	for (int i = 0; i < input->size (); i++) {
+		c = (*input)[i];
+		input->erase (input->begin ());
+
+		switch (state) {
+
+		case 0: {
+			if (c == 'd') {
+				state = 1;
+
+			}
+			else {
+				return false;
+			}
+
+		}
+			  break;
+		case 1: {
+			if (c == 'o') {
+				state = 2;
+			}
+			else {
+				return false;
+			}
+
+		}
+			  break;
+		case 2: {
+			if (c == 'u') {
+				state = 3;
+			}
+			else {
+				return false;
+			}
+
+		}
+			  break;
+
+		case 3: {
+			if (c == 'b') {
+				state = 4;
+			}
+			else {
+				return false;
+			}
+
+		}
+			  break;
+
+		case 4: {
+			if (c == 'l') {
+				state = 5;
+			}
+			else {
+				return false;
+			}
+
+		}
+			  break;
+
+		case 5: {
+			if (c == 'e') {
+				state = 5;
+				return true;
+			}
+			else {
+				return false;
+			}
+
+		}
+			  break;
+
+		}
+	}
+
+
+}
+
+bool init_char (Automat* au, vector<char>* input) {
+	int state = 0;
+	char c;
+
+	for (int i = 0; i < input->size (); i++) {
+		c = (*input)[i];
+		input->erase (input->begin ());
+
+		switch (state) {
+
+		case 0: {
+			if (c == 'c') {
+				state = 1;
+
+			}
+			else {
+				return false;
+			}
+
+		}
+			  break;
+		case 1: {
+			if (c == 'h') {
+				state = 2;
+			}
+			else {
+				return false;
+			}
+
+		}
+			  break;
+		case 2: {
+			if (c == 'a') {
+				state = 3;
+			}
+			else {
+				return false;
+			}
+
+		}
+			  break;
+
+		case 3: {
+			if (c == 'r') {
+				state = 3;
+				return true;
+			}
+			else {
+				return false;
+			}
+
+		}
+			  break;
+		}
+	}
+
+}
+
+bool init_charNb (Automat* au, vector<char>* input, bool isDeclaration) {
+
+	int state = 0;
+	char c;
+
+	for (int i = 0; i < input->size (); i++) {
+		c = (*input)[i];
+		input->erase (input->begin ());
+
+		switch (state) {
+
+		case 0: {
+			if (c == '\'') {
+				state = 1;
+			}
+			else {
+				return false;
+			}
+		}
+			  break;
+		case 1: {
+			if (isalpha (c) || isdigit (c) || c == ' ') {
+				state = 2;
+			}
+			else {
+				return false;
+			}
+
+		}
+			  break;
+
+		case 2: {
+			if (c == '\'') {
+				state = 2;
+				if (!isDeclaration) {
+					return true;
+				}
+			}
+			else if (c == ';') {
+				return true;
+			}
+			else {
+				return false;
+			}
+
+		}
+			  break;
+		}
+	}
+
+}
+
+bool init_string (Automat* au, vector<char>* input) {
+	int state = 0;
+	char c;
+
+	for (int i = 0; i < input->size (); i++) {
+		c = (*input)[i];
+		input->erase (input->begin ());
+
+		switch (state) {
+
+		case 0: {
+			if (c == 's') {
+				state = 1;
+
+			}
+			else {
+				return false;
+			}
+
+		}
+			  break;
+		case 1: {
+			if (c == 't') {
+				state = 2;
+			}
+			else {
+				return false;
+			}
+
+		}
+			  break;
+		case 2: {
+			if (c == 'r') {
+				state = 3;
+			}
+			else {
+				return false;
+			}
+
+		}
+			  break;
+
+		case 3: {
+			if (c == 'i') {
+				state = 4;
+			}
+			else {
+				return false;
+			}
+
+		}
+			  break;
+
+		case 4: {
+			if (c == 'n') {
+				state = 5;
+			}
+			else {
+				return false;
+			}
+
+		}
+			  break;
+
+		case 5: {
+			if (c == 'g') {
+				state = 5;
+				return true;
+			}
+			else {
+				return false;
+			}
+
+		}
+			  break;
+
+		}
+	}
+
+}
+
+bool init_stringNb (Automat* au, vector<char>* input, bool isDeclaration) {
+
+	int state = 0;
+	char c;
+	int openedString = 0;
+
+	for (int i = 0; i < input->size (); i++) {
+		c = (*input)[i];
+		input->erase (input->begin ());
+
+		switch (state) {
+
+		case 0: {
+			if (c == '\"') {
+				state = 1;
+				openedString++;
+			}
+			else {
+				return false;
+			}
+		}
+			  break;
+		case 1: {
+			if (isalpha (c) || isdigit (c) || c == ' ') {
+				state = 2;
+			}
+			else if (c == '\"') {
+				openedString--;
+				state = 2;
+			}
+			else {
+				return false;
+			}
+
+		}
+			  break;
+
+		case 2: {
+			if (c == '\"') {
+				state = 2;
+
+				if (openedString == 0) {
+					++openedString;
+				}
+				else {
+					--openedString;
+				}
+				
+				if (!isDeclaration && openedString == 0) {
+					return true;
+				}
+			}
+			else if (c == ';') {
+				return true;
+			}
+			else if (openedString != 0 && (isdigit (c) || isalpha (c))) {
+				state = 2;
+			}
+			else {
+				return false;
+			}
+
+		}
+			  break;
+		}
+	}
+
+}
+
+
+bool init_Automat (Automat* autom, vector<char> input) {
+
+	vector<char>* temp = &input;
+
+	for (int i = 0; i < 1; i++) {
+		//if case initialization
+		if (init_int (autom, temp)) {
+
+			
+			if (init_object (autom, temp)) {
+				char c = (*temp)[0];
+
+				if (c == '=') {
+					temp->erase (temp->begin ());
+					//Handle here stuff related to = , which means add the = to be recognised later
+				}
+				if (init_intNb (autom, temp)) {
+					cout << "Entered" << endl;
+					return true;
+
+				}
+				else {
+					return false;
+				}
+				
+
+			}
+			else {
+				return false;
+			}
+		}
+		else {
+			cout << "Entered the dungeon" << endl;
+			return false;
+		}
+
+	}
+
+	for (char c : (*temp)) {
+		cout << c << ' ';
+	}
+
+	return true;
+
+	
+
+	
 	// // Debug purpose
-	cout << "Label - Origin - Target:" << endl;
+	/*cout << "Label - Origin - Target:" << endl;
 	for (int i = 0; i < autom->delta.size (); i++) {
 		cout << autom->delta[i].regexBlock << "\t";
 		cout << autom->delta[i].origin << "\t";
@@ -130,7 +863,7 @@ void init_reAutomat (Automat* autom, string re, vector<Transition>* transitionsA
 		cout << autom->states[i];
 		cout << endl;
 		cout << endl;
-	}
+	}*/
 
 	/*char states[nbStates];					//Del this later
 	Transition delta[nbTransitions];
@@ -154,167 +887,176 @@ void init_automatAlphabet (Automat* autom, string re) {
 
 
 		alphabet_counter++;
+
+		
 	}
 }
-
 
 void init_reToTransitionsBlocks (Automat* autom, vector<Transition>* transitionsArr) {
 
-	//counters that count for any brackets / paranthesis that are open, example: a(  / a[
-	int opened_brackets = 0;
-	int opened_paranthesis = 0;
-
-	char q0 = autom->q0;
-
-	//state that we should enter in the upcoming iteration
-	int enterState = 0;
-
-	for (int i = 0; i < autom->alphabet.size(); i++) {
-		//filling on each iteration the values or each delta
-		if (i > 0) {
-			char prevChar = autom->alphabet[i - 1];
-		}
-
-		char currentChar = 'k';
-		if (i < autom->alphabet.size () - 1) {
-			char nextChar = autom->alphabet[i + 1];
-		}
-
-
-
-		switch (enterState) {
-			//alphabet char entered: [a-z]
-		case 1: {
-			if (isalpha (target)) {
-				autom->states[states_counter + 1] = 1;
-			}
-			else if (target == '(') {
-				autom->states[states_counter + 1] = 2;
-			}
-			else if (target == '[') {
-				autom->states[states_counter + 1] = 3;
-			}
-			else if (target == ')' && (isalpha (label) || checkIfSymbol (label, "*+")) && opened_paranthesis > 0) {
-				autom->states[states_counter + 1] = 5;
-			}
-			else if (target == ']' && isdigit (label) && opened_brackets > 0) {
-				autom->states[states_counter + 1] = 6;
-			}
-			else if (checkIfSymbol (target, "*+")) {
-				autom->states[states_counter + 1] = 7;
-			}
-
-		}
-			  break;
-			  //paranthesis entered: (
-		case 2: {
-			opened_paranthesis++;
-			if (isalpha (target)) {
-				autom->states[states_counter + 1] = 1;
-			}
-			else if (target == '(') {
-				autom->states[states_counter + 1] = 2;
-			}
-			else if (target == '[') {
-				autom->states[states_counter + 1] = 3;
-			}
-
-		}
-			  break;
-			  //brackets entered: [
-		case 3: {
-			opened_brackets++;
-			if (isdigit (target)) {
-				autom->states[states_counter + 1] = 4;
-			}
-		}
-			  break;
-
-			  //digit entered or - entered (for letters, do same but with isalpha)
-		case 4: {
-			if ((target == '-' && isdigit (label)) && opened_brackets > 0) {
-				autom->states[states_counter + 1] = 4;
-			}
-			else if (label == '-' && opened_brackets > 0 && isdigit (target)) {
-				autom->states[states_counter + 1] = 4;
-			}
-			else if (isdigit (label) && opened_brackets > 0 && target != ']') {
-				autom->states[states_counter + 1] = 4;
-			}
-			else if (target == ']' && isdigit (label) && opened_brackets > 0) {
-				autom->states[states_counter + 1] = 6;
-			}
-		}
-			  break;
-
-			  //paranthesis closed
-		case 5: {
-			opened_paranthesis--;
-			if (isalpha (target)) {
-				autom->states[states_counter + 1] = 1;
-			}
-			else if (target == '(') {
-				autom->states[states_counter + 1] = 2;
-			}
-			else if (target == '[') {
-				autom->states[states_counter + 1] = 3;
-			}
-			else if (checkIfSymbol (target, "*+")) {
-				autom->states[states_counter + 1] = 7;
-			}
-
-		}
-			  break;
-			  //brackets closed
-		case 6: {
-			opened_brackets--;
-			opened_paranthesis--;
-			if (isalpha (target)) {
-				autom->states[states_counter + 1] = 1;
-			}
-			else if (target == '(') {
-				autom->states[states_counter + 1] = 2;
-			}
-			else if (target == '[') {
-				autom->states[states_counter + 1] = 3;
-			}
-			else if (checkIfSymbol (target, "*+")) {
-				autom->states[states_counter + 1] = 7;
-			}
-		}
-			  break;
-
-			  //number repetitions specifier entered (* or +)
-		case 7: {
-			if (isalpha (target)) {
-				autom->states[states_counter + 1] = 1;
-			}
-			else if (target == ')' && (isalpha (label) || checkIfSymbol (label, "*+")) && opened_paranthesis > 0) {
-				autom->states[states_counter + 1] = 5;
-			}
-			else if (target == '(') {
-				autom->states[states_counter + 1] = 2;
-			}
-			else if (target == '[') {
-				autom->states[states_counter + 1] = 3;
-			}
-
-		}
-			  break;
-
-
-		default: {
-			cout << "Error" << endl;
-		}
-			   break;
-
-
-		}
-
-
-		states_counter++;
-	}
 }
+
+//Old automat that reads regex
+//void init_reToTransitionsBlocks (Automat* autom, vector<Transition>* transitionsArr) {
+//
+//	//counters that count for any brackets / paranthesis that are open, example: a(  / a[
+//	int opened_brackets = 0;
+//	int opened_paranthesis = 0;
+//
+//	char q0 = autom->q0;
+//
+//	//state that we should enter in the upcoming iteration
+//	int enterState = 0;
+//
+//	for (int i = 0; i < autom->alphabet.size(); i++) {
+//		//filling on each iteration the values or each delta
+//		if (i > 0) {
+//			char prevChar = autom->alphabet[i - 1];
+//		}
+//
+//		char currentChar = 'k';
+//		if (i < autom->alphabet.size () - 1) {
+//			char nextChar = autom->alphabet[i + 1];
+//		}
+//
+//		int target = 0;
+//
+//		int states_counter = 0;
+//
+//
+//		switch (enterState) {
+//			//alphabet char entered: [a-z]
+//		case 1: {
+//			if (isalpha (target)) {
+//				autom->states[states_counter + 1] = 1;
+//			}
+//			else if (target == '(') {
+//				autom->states[states_counter + 1] = 2;
+//			}
+//			else if (target == '[') {
+//				autom->states[states_counter + 1] = 3;
+//			}
+//			else if (target == ')' && (isalpha (label) || checkIfSymbol (label, "*+")) && opened_paranthesis > 0) {
+//				autom->states[states_counter + 1] = 5;
+//			}
+//			else if (target == ']' && isdigit (label) && opened_brackets > 0) {
+//				autom->states[states_counter + 1] = 6;
+//			}
+//			else if (checkIfSymbol (target, "*+")) {
+//				autom->states[states_counter + 1] = 7;
+//			}
+//
+//		}
+//			  break;
+//			  //paranthesis entered: (
+//		case 2: {
+//			opened_paranthesis++;
+//			if (isalpha (target)) {
+//				autom->states[states_counter + 1] = 1;
+//			}
+//			else if (target == '(') {
+//				autom->states[states_counter + 1] = 2;
+//			}
+//			else if (target == '[') {
+//				autom->states[states_counter + 1] = 3;
+//			}
+//
+//		}
+//			  break;
+//			  //brackets entered: [
+//		case 3: {
+//			opened_brackets++;
+//			if (isdigit (target)) {
+//				autom->states[states_counter + 1] = 4;
+//			}
+//		}
+//			  break;
+//
+//			  //digit entered or - entered (for letters, do same but with isalpha)
+//		case 4: {
+//			if ((target == '-' && isdigit (label)) && opened_brackets > 0) {
+//				autom->states[states_counter + 1] = 4;
+//			}
+//			else if (label == '-' && opened_brackets > 0 && isdigit (target)) {
+//				autom->states[states_counter + 1] = 4;
+//			}
+//			else if (isdigit (label) && opened_brackets > 0 && target != ']') {
+//				autom->states[states_counter + 1] = 4;
+//			}
+//			else if (target == ']' && isdigit (label) && opened_brackets > 0) {
+//				autom->states[states_counter + 1] = 6;
+//			}
+//		}
+//			  break;
+//
+//			  //paranthesis closed
+//		case 5: {
+//			opened_paranthesis--;
+//			if (isalpha (target)) {
+//				autom->states[states_counter + 1] = 1;
+//			}
+//			else if (target == '(') {
+//				autom->states[states_counter + 1] = 2;
+//			}
+//			else if (target == '[') {
+//				autom->states[states_counter + 1] = 3;
+//			}
+//			else if (checkIfSymbol (target, "*+")) {
+//				autom->states[states_counter + 1] = 7;
+//			}
+//
+//		}
+//			  break;
+//			  //brackets closed
+//		case 6: {
+//			opened_brackets--;
+//			opened_paranthesis--;
+//			if (isalpha (target)) {
+//				autom->states[states_counter + 1] = 1;
+//			}
+//			else if (target == '(') {
+//				autom->states[states_counter + 1] = 2;
+//			}
+//			else if (target == '[') {
+//				autom->states[states_counter + 1] = 3;
+//			}
+//			else if (checkIfSymbol (target, "*+")) {
+//				autom->states[states_counter + 1] = 7;
+//			}
+//		}
+//			  break;
+//
+//			  //number repetitions specifier entered (* or +)
+//		case 7: {
+//			if (isalpha (target)) {
+//				autom->states[states_counter + 1] = 1;
+//			}
+//			else if (target == ')' && (isalpha (label) || checkIfSymbol (label, "*+")) && opened_paranthesis > 0) {
+//				autom->states[states_counter + 1] = 5;
+//			}
+//			else if (target == '(') {
+//				autom->states[states_counter + 1] = 2;
+//			}
+//			else if (target == '[') {
+//				autom->states[states_counter + 1] = 3;
+//			}
+//
+//		}
+//			  break;
+//
+//
+//		default: {
+//			cout << "Error" << endl;
+//		}
+//			   break;
+//
+//
+//		}
+//
+//
+//		states_counter++;
+//	}
+//}
 
 void tokenize_reInput (Automat* autom, int, char) {
 

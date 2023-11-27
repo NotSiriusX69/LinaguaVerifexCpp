@@ -32,44 +32,13 @@ struct Transition {
 };
 
 //This struct is the main one that holds everything (check project notes UI logic)
-struct RE {
-	std::string re;
-	std::vector<char> alphabet;
-
-	Automat* autom;
-	NFA* nfa;
-	DFA* dfa;
-	TREE* tree;
-};
 
 // Automat structure
 struct Automat {
+	std::string identifier;
 	int states[nbStates];
 	char q0; //Initial state
 	std::vector<Transition> delta;
 	char statesTerminal[nbStatesTerminal];
-};
-
-// NFA structure
-struct NFA {
-	int states[nbStates];
-	char q0; //Initial state
-	std::vector<Transition> delta;
-	char statesTerminal[nbStatesTerminal];
-};
-
-// DFA structure
-struct DFA {
-	int states[nbStates];
-	char q0; //Initial state
-	std::vector<Transition> delta;
-	char statesTerminal[nbStatesTerminal];
-};
-
-// TREE structure
-struct TREE {
-	int states[nbStates];
-	char q0; //Initial state
-	std::vector<Transition> delta;
-	char statesTerminal[nbStatesTerminal];
+	std::vector<char> alphabet;
 };

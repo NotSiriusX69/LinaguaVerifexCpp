@@ -3,7 +3,7 @@
 
 
 //function that checks if the input is equal to one of the specified regex elements
-bool checkIfSymbol (char input, string regex) {
+bool checkIfRegex (char input, string regex) {
 
 	for (char c : regex) {
 		if (c == input) {
@@ -26,6 +26,19 @@ string remove_reSpaces (string input) {
 	}
 
 	return result;
+}
+
+std::vector<char> convert_stringToVector (string input) {
+	std::vector<char> arr;
+
+	for (char c : input) {
+		if (c != ' ') {
+			arr.push_back (c);
+		}
+		
+	}
+
+	return arr;
 }
 
 //function that converts a transition vector to array
