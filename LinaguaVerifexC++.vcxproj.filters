@@ -18,5 +18,28 @@
     <ClCompile Include="LinaguaVerifexC++.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Automat.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AutomatArray.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RegularExpression&amp;String.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="JsonManip.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="JsonManipAutomat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="JsonManipAutomatArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="utilities.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
