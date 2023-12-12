@@ -1,3 +1,5 @@
+#pragma once
+
 #include <string>
 #include <vector>
 
@@ -13,21 +15,20 @@ const std::string path = "data/automat.json";
 
 // Transition structure 
 struct Transition {
-	//origin state, target state, and current regex block (ex: [0-9]^+  snf its regexToken would be: NUM)
-	char origin;
-	std::string regexBlock;
-	char target;
+    //origin state, target state, and current regex block
+    std::string origin;
+    std::string current;
+    std::string target;
 
-	std::string regexToken;
 
-	//user can choose to write it or not, and if he writes it, then he can infinitely continue
-	bool starRepetition = false;
+    //user can choose to write it or not, and if he writes it, then he can infinitely continue
+    bool starRepetition = false;
 
-	//user has to write it, and when he writes it, then he can infinitely continue
-	bool plusRepetition = false;
+    //user has to write it, and when he writes it, then he can infinitely continue
+    bool plusRepetition = false;
 
-	//user can write it once or not at all
-	bool emptyRepetition = false;
+    //user can write it once or not at all
+    bool emptyRepetition = false;
 
 };
 
@@ -35,10 +36,11 @@ struct Transition {
 
 // Automat structure
 struct Automat {
-	std::string identifier;
-	int states[nbStates];
-	char q0; //Initial state
-	std::vector<Transition> delta;
-	char statesTerminal[nbStatesTerminal];
-	std::vector<char> alphabet;
+    std::string* identifier;
+    int* states;
+    std::string* q0; //Initial state
+    std::vector<Transition*>* delta;
+    std::vector<std::string*>* statesTerminal;
+    std::string* type;
+    std::string* value;
 };
