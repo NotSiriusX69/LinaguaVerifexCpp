@@ -41,4 +41,6 @@ struct Automat {
     std::string* q0; //Initial state
     std::vector<Transition*>* delta;
     std::vector<std::string*>* statesTerminal;
+    std::string* type;
+    std::string* value;
 };

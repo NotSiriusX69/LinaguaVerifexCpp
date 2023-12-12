@@ -17,6 +17,7 @@ bool checkIfRegex (char input, string regex) {
 }
 
 
+
 //function to remove spaces in RE
 string remove_reSpaces (string input) {
     string result;

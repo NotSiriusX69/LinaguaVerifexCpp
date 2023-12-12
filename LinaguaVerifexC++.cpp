@@ -19,6 +19,8 @@ bool init_Automat (vector<Automat*>*, vector<char>);
 int init_object (vector<char>);//
 bool init_object_sem (Automat*, vector<char>*);//
 
+bool init_check_symbol(vector<char>*);
+
 // ##### Main
 int init_main (vector<char>);//
 bool init_main_sem (Automat*, vector<char>*);//
@@ -123,6 +125,7 @@ void insertQ0(string*, string);
 void insertTransition(vector<Transition*>*, Transition*);
 void insertTerminalState(vector<string*>*, string*);
 void insertState(int*, int);
+bool insertObject(map<string, string>*, string, string);
 
 
 int main ()
@@ -357,23 +360,23 @@ void init_Automats(vector<Automat*>* au){
     init_Automat_info(else_autom, else_tran, else_statesTerminal, else_states, else_identifier, else_q0);
 
 
-    au->push_back(int_autom);
-    au->push_back(double_autom);
-    au->push_back(float_autom);
-    au->push_back(char_autom);
-    au->push_back(string_autom);
-    au->push_back(for_autom);
-    au->push_back(while_autom);
-    au->push_back(if_autom);
-    au->push_back(doWhile_autom);
-    au->push_back(array_autom);
-    au->push_back(public_autom);
-    au->push_back(static_autom);
-    au->push_back(void_autom);
-    au->push_back(main_autom);
-    au->push_back(private_autom);
-    au->push_back(object_autom);
-    au->push_back(else_autom);
+    au->push_back(int_autom); // 1
+    au->push_back(double_autom);// 2
+    au->push_back(float_autom);// 3
+    au->push_back(char_autom);// 4
+    au->push_back(string_autom);// 5
+    au->push_back(for_autom);// 6
+    au->push_back(while_autom);// 7
+    au->push_back(if_autom);// 8
+    au->push_back(doWhile_autom);// 9
+    au->push_back(array_autom);// 10
+    au->push_back(public_autom);// 11
+    au->push_back(static_autom);// 12
+    au->push_back(void_autom);// 13
+    au->push_back(main_autom);// 14
+    au->push_back(private_autom);// 15
+    au->push_back(object_autom);// 16
+    au->push_back(else_autom);// 17
 }
 
 
@@ -424,7 +427,21 @@ void insertQ0(string* q0, string text){
 
 }
 
+//returns false means object was updated instead of inserted and vice versa
+bool insertObject(map<string, string>* map, string object, string value){
+    auto testFind = map->find(object);
 
+    if (testFind != map->end()) {
+        // Element found, update its value
+        testFind->second = value;
+        return false;
+    } else {
+        // Element not found, insert a new one
+        map->insert({object, value});
+        return true;
+    }
+
+}
 
 bool init_Automat (vector<Automat*>* au, vector<char> input) {
 
@@ -443,20 +460,61 @@ bool init_Automat (vector<Automat*>* au, vector<char> input) {
             {"array", false}
     };
 
+    //This is used to save all created objects and their values
+    auto* createdObjects = new map<string, string>;
+
+    Automat* int_automat = &((*au->at(0)));
+    Automat* double_automat = &((*au->at(1)));
+    Automat* float_automat = &((*au->at(2)));
+    Automat* char_automat = &((*au->at(3)));
     Automat* string_automat = &((*au->at(4)));
+
+    Automat* for_automat = &((*au->at(5)));
+    Automat* while_automat = &((*au->at(6)));
+    Automat* if_automat = &((*au->at(7)));
+    Automat* doWhile_automat = &((*au->at(8)));
+    Automat* array_automat = &((*au->at(9)));
+
+    Automat* public_automat = &((*au->at(10)));
+    Automat* static_automat = &((*au->at(11)));
+    Automat* void_automat = &((*au->at(12)));
+    Automat* main_automat = &((*au->at(13)));
+    Automat* private_automat = &((*au->at(14)));
+
+    Automat* object_automat = &((*au->at(15)));
+    Automat* else_automat = &((*au->at(16)));
+
     vector<Transition*>* string_tran = (string_automat->delta);
+    vector<Transition*>* int_tran = (int_automat->delta);
     vector<string*>* string_terminals = (string_automat->statesTerminal);
 
-    auto* testing = new Transition;
-    testing->origin = "i";
+    auto* int_state_0 = new Transition;
+    int_state_0->origin = "i";
+    int_state_0->current = "i";
+    int_state_0->target = "n";
+
+    auto* int_state_1 = new Transition;
+    int_state_1->origin = "i";
+    int_state_1->current = "n";
+    int_state_1->target = "t";
+
+    auto* int_state_2 = new Transition;
+    int_state_2->origin = "n";
+    int_state_2->current = "t";
+    int_state_2->target = "t";
+
+    insertTransition(int_automat->delta, int_state_0);
+    insertTransition(int_automat->delta, int_state_1);
+    insertTransition(int_automat->delta, int_state_2);
 
     auto* testing2 = new string("State terminal example");
 
     insertIdentifier((string_automat->identifier), "Hello world");
     insertQ0(string_automat->q0, "i");
-    insertTransition(string_automat->delta, testing);
     insertTerminalState(string_automat->statesTerminal, testing2);
     insertState(string_automat->states, 3);
+
+    //insertObject(createdObjects, "int", "6");
 
     cout<<"How to print Q0: ";
     cout<<*string_automat->q0<<endl;
@@ -467,7 +525,7 @@ bool init_Automat (vector<Automat*>* au, vector<char> input) {
 
     cout<<"How to print any element in transition of automat"<<endl;
     cout<<endl;
-    cout<<string_tran->at(0)->origin<<endl;
+    cout<<int_tran->at(0)->origin<<endl;
 
     cout<<"How to print states terminal: ";
     cout<<*string_terminals->at(0)<<endl;
@@ -481,7 +539,7 @@ bool init_Automat (vector<Automat*>* au, vector<char> input) {
     cout<<endl;*/
 
 
-    /*// This handles stuff related to the initiation of the language conditions
+    // This handles stuff related to the initiation of the language conditions
     bool allValuesZero = true;
     int oneValueTrue = 0;
 
@@ -500,171 +558,313 @@ bool init_Automat (vector<Automat*>* au, vector<char> input) {
     bool repeat = true;
 
     vector<char>* temp = &input;
+    auto* tempForSacrifice = new vector<char>(*temp);
+
+    bool safeToCopy = false;
+
 
 
         //This is the Main case with code inside it
         if (allowedAutomats["main"] && oneValueTrue > 1) {
 
             if(init_public(*temp) > -1){
-                init_public_sem (au, temp);
+                init_public_sem (public_automat, temp);
 
             }
             else if (init_main (*temp)) {
-                init_main_sem (au, temp);
+                init_main_sem (main_automat, temp);
 
                 cout << "Entered Main" << endl;
-                for (char c : *temp)
+                /*for (char c : *temp)
                 {
                     cout << c;
-                }
+                }*/
                 do {
+                    *tempForSacrifice = *temp;
+
+                    safeToCopy = false;
+
+                    cout<<"Printing output: "<<endl;
+                    for (char c : *temp)
+                    {
+                        cout << c;
+                    }
+                    cout<<endl;
 
 
-                    if (init_string (*temp) > -1) {
-                        init_string_sem (au, temp);
-                        return true;
+                    if (init_string (*tempForSacrifice) > -1) {
+                        init_string_sem (string_automat, tempForSacrifice);
+                        *temp = *tempForSacrifice;
+                        safeToCopy = true;
+                    }else{
+                        *tempForSacrifice = *temp;
+                        safeToCopy = false;
                     }
 
-                    else if (init_double (*temp) > -1) {
-                        init_double_sem (au, temp);
+                    if(safeToCopy){
+                        *temp = *tempForSacrifice;
+                    }
+                    else{
+                        *tempForSacrifice = *temp;
+                    }
+
+                    if (init_double (*tempForSacrifice) > -1) {
+                        init_double_sem (double_automat, tempForSacrifice);
                         cout << "Entered DOUBLE" << endl;
 
                         //Here its explode
-                        int obj = init_object (*temp);
+                        int obj = init_object (*tempForSacrifice);
                         if (obj > 0) {
-                            init_object_sem (au, temp);
+                            init_object_sem (object_automat, tempForSacrifice);
 
-                            if (init_doubleNb (*temp) > -1) {
-                                init_doubleNb_sem (au, temp);
-
-                                return true;
+                            if (init_doubleNb (*tempForSacrifice) > -1) {
+                                init_doubleNb_sem (double_automat, tempForSacrifice);
+                                *temp = *tempForSacrifice;
+                                safeToCopy = true;
+                            }else{
+                                *tempForSacrifice = *temp;
+                                safeToCopy = false;
                             }
-                            *//*else {
-								return false;
-							}*//*
 
 
-						}
-						*//*else {
-							return false;
-						}*//*
-					}
-					else if (init_float (*temp) > -1) {
-						init_float_sem (au, temp);
+						}else{
+                            *tempForSacrifice = *temp;
+                            safeToCopy = false;
+                        }
+
+					}else{
+                        *tempForSacrifice = *temp;
+                        safeToCopy = false;
+                    }
+
+                    if(safeToCopy){
+                        *temp = *tempForSacrifice;
+                    }
+                    else{
+                        *tempForSacrifice = *temp;
+                    }
+
+                    if (init_float (*tempForSacrifice) > -1) {
+						init_float_sem (float_automat, tempForSacrifice);
 						cout << "Entered FLOAT" << endl;
 
 						//Here its explode
-						int obj = init_object (*temp);
+						int obj = init_object (*tempForSacrifice);
 						if (obj > 0) {
-							init_object_sem (au, temp);
+							init_object_sem (object_automat, tempForSacrifice);
 
-							if (init_floatNb (*temp) > -1) {
+							if (init_floatNb (*tempForSacrifice) > -1) {
 
-								init_floatNb_sem (au, temp);
+								init_floatNb_sem (float_automat, tempForSacrifice);
+                                *temp = *tempForSacrifice;
+								safeToCopy = true;
+							}else{
+                                *tempForSacrifice = *temp;
+                                safeToCopy = false;
+                            }
 
-								return true;
-							}
-							*//*else {
-								return false;
-							}*//*
+						}else{
+                            *tempForSacrifice = *temp;
+                            safeToCopy = false;
+                        }
+
+					}else{
+                        *tempForSacrifice = *temp;
+                        safeToCopy = false;
+                    }
+
+                    if(safeToCopy){
+                        *temp = *tempForSacrifice;
+                    }
+                    else{
+                        *tempForSacrifice = *temp;
+                    }
 
 
-						}
-						*//*else {
-							return false;
-						}*//*
-					}
-					else if (init_char (*temp) > -1) {
-						init_char_sem (au, temp);
+                    if (init_char (*tempForSacrifice) > -1) {
+						init_char_sem (char_automat, tempForSacrifice);
 						cout << "Entered CHAR" << endl;
 
 						//Here its explode
-						int obj = init_object (*temp);
+						int obj = init_object (*tempForSacrifice);
 						if (obj > 0) {
-							init_object_sem (au, temp);
+							init_object_sem (object_automat, tempForSacrifice);
 
-							if (init_charNb (*temp, true) > -1) {
+							if (init_charNb (*tempForSacrifice, true) > -1) {
 
-								init_charNb_sem (au, temp, true);
+								init_charNb_sem (char_automat, tempForSacrifice, true);
+                                *temp = *tempForSacrifice;
+								safeToCopy = true;
+							}else{
+                                *tempForSacrifice = *temp;
+                                safeToCopy = false;
 
-								return true;
-							}
-							*//*else {
-								return false;
-							}*//*
+                            }
 
+						}else{
+                            *tempForSacrifice = *temp;
+                            safeToCopy = false;
 
-						}
-						*//*else {
-							return false;
-						}*//*
-					}
-					else if (init_int (*temp) > -1) {
-						cout << "Entered INT" << endl;
-
-						for (char c : *temp)
-						{
-							cout << c;
-						}
-
-                        if (init_array(au, *temp) > -1) {
-                            init_array_sem (au, temp);
-                            return true;
                         }
+
+
+
+					}
+                    else{
+                            *tempForSacrifice = *temp;
+                            safeToCopy = false;
+
+                    }
+
+                    if(safeToCopy){
+                        *temp = *tempForSacrifice;
+                    }
+                    else{
+                        *tempForSacrifice = *temp;
+                    }
+
+
+                    /*if (init_object (*tempForSacrifice) > -1) {
+						init_object_sem (object_automat, tempForSacrifice);
+                        *temp = *tempForSacrifice;
+                        safeToCopy = true;
+					}
+                    else{
+                        *tempForSacrifice = *temp;
+                        safeToCopy = false;
+                    }
+
+                    if(safeToCopy){
+                        *temp = *tempForSacrifice;
+                    }
+                    else{
+                        *tempForSacrifice = *temp;
+                    }*/
+
+
+                    /*if (init_if (if_automat, *tempForSacrifice) > -1) {
+						init_if_sem (if_automat, tempForSacrifice);
+
 						//Here its explode
-						int obj = init_object (*temp);
-						cout << obj;
+						int obj = init_object (*tempForSacrifice);
 						if (obj > 0) {
-							init_object_sem (au, temp);
+							init_object_sem (object_automat, tempForSacrifice);
 
-							if (init_intNb (*temp) > -1) {
+							if (init_charNb (*tempForSacrifice, true)) {
 
-								init_intNb_sem (au, temp);
+								init_charNb_sem (char_automat, tempForSacrifice, true);
+                                *temp = *tempForSacrifice;
+								safeToCopy = true;
+							}else{
+                                *tempForSacrifice = *temp;
+                                safeToCopy = false;
+                            }
 
-								return true;
-							}
-							*//*else {
-								return false;
-							}*//*
+						}else{
+                            *tempForSacrifice = *temp;
+                            safeToCopy = false;
+                        }
 
 
-						}
-						*//*else {
-							return false;
-						}*//*
 
 					}
-					else if (init_object (*temp) > -1) {
-						init_object_sem (au, temp);
-						return true;
-					}
-					//else if (init_if (*temp)) {
-					//	init_if_sem (au, temp);
+                    else{
+                        *tempForSacrifice = *temp;
+                        safeToCopy = false;
+                    }
 
-					//	//Here its explode
-					//	int obj = init_object (*temp);
-					//	if (obj > 0) {
-					//		init_object_sem (au, temp);
+                    if(safeToCopy){
+                        *temp = *tempForSacrifice;
+                    }
+                    else{
+                        *tempForSacrifice = *temp;
+                    }*/
 
-					//		if (init_charNb (*temp, true)) {
+					/*else if (init_for (*tempForSacrifice)) {
+						init_for_sem (for_automat, tempForSacrifice);
+					}*/
+                    if (init_array(array_automat, *tempForSacrifice) > -1) {
+                        cout<<"Entered Array"<<endl;
+                        init_array_sem (array_automat, tempForSacrifice);
+                        *temp = *tempForSacrifice;
+                        safeToCopy = true;
+                    }else{
+                        *tempForSacrifice = *temp;
+                        safeToCopy = false;
+                    }
 
-					//			init_charNb_sem (au, temp, true);
+                    if(safeToCopy){
+                        *temp = *tempForSacrifice;
+                    }
+                    else{
+                        *tempForSacrifice = *temp;
+                    }
 
-					//			return true;
-					//		}
-					//		else {
-					//			return false;
-					//		}
+
+                    if(init_int(*tempForSacrifice)){
+                        init_int_sem(int_automat, tempForSacrifice);
+                        cout<<"Enterer INT"<<endl;
+
+                        if(init_object(*tempForSacrifice) > -1){
+                            string concatObj;
+                            for(int i = 0; i < init_object(*tempForSacrifice); i++){
+                                concatObj += tempForSacrifice->at(i);
+                            }
+                            insertObject(createdObjects, "int", concatObj);
+                            init_object_sem(object_automat, tempForSacrifice);
+
+                            cout<<"Entered before symbol"<<endl;
+
+                                cout<<"Entered after symbol"<<endl;
+
+                                if(init_intNb(*tempForSacrifice) > -1){
+                                    init_intNb_sem(int_automat, tempForSacrifice);
+                                    *temp = *tempForSacrifice;
+                                    safeToCopy = true;
+                                }else{
+                                    *tempForSacrifice = *temp;
+                                    safeToCopy = false;
+                                }
 
 
-					//	}
-					//	else {
-					//		return false;
-					//	}
-					//}
-					*//*else if (init_for (*temp)) {
-						init_for_sem (au, temp);
-					}*//*
+                        }else{
+                            *tempForSacrifice = *temp;
+                            safeToCopy = false;
+                        }
+
+
+                    }else{
+                        *tempForSacrifice = *temp;
+                        safeToCopy = false;
+                    }
+
+                    if(safeToCopy){
+                        *temp = *tempForSacrifice;
+                    }
+                    else{
+                        *tempForSacrifice = *temp;
+                    }
+
+
+                    if(temp->empty()){
+                        repeat = false;
+                        return true;
+                    }
+
+                    cout<<"Sacrifice: "<<endl;
+                    for (char c : *temp)
+                    {
+                        cout << c;
+                    }
+                    cout<<endl;
+
+
+                    if(safeToCopy){
+                        *temp = *tempForSacrifice;
+                    }
+                    else{
+                        *tempForSacrifice = *temp;
+                    }
 
 
 				} while (repeat);
@@ -684,7 +884,6 @@ bool init_Automat (vector<Automat*>* au, vector<char> input) {
 			return false;
 		}
 
-*/
 
     return false;
 
@@ -711,6 +910,63 @@ bool init_Automat (vector<Automat*>* au, vector<char> input) {
     //char temp_alphabet[26] = { 'a', 'b' ,'c' ,'d' ,'e' ,'f' ,'g' ,'h' ,'i' ,'j' ,'k' ,'l' ,'m' ,'n' ,'p' ,'q' ,'r' ,'s' ,'t' ,'o' ,'u' ,'v' ,'x' ,'y' , 'z' ,'w' };
 
 
+}
+
+
+bool init_check_symbol(vector<char>* input){
+    int state = 0;
+    char c;
+
+        c = (*input)[0];
+
+        switch (c) {
+
+            case '=': {
+                input->erase (input->begin ());
+                return true;
+
+            }
+                break;
+            case '/': {
+                input->erase (input->begin ());
+                return true;
+            }
+                break;
+            case '%': {
+                input->erase (input->begin ());
+                return true;
+
+            }
+                break;
+
+            case '+': {
+                input->erase (input->begin ());
+                return true;
+
+            }
+                break;
+
+            case '-': {
+                input->erase (input->begin ());
+                return true;
+
+            }
+                break;
+
+            case '*': {
+                input->erase (input->begin ());
+                return true;
+            }
+                break;
+
+            default:{
+                return false;
+            }
+
+        }
+
+
+    return false;
 }
 
 int init_public(vector<char> input) {
@@ -805,6 +1061,8 @@ bool init_public_sem (Automat* au, vector<char>* input){
             case 0: {
                 if (c == 'p') {
                     state = 1;
+                    input->erase (input->begin ());
+                    --i;
 
                 }
                 else {
@@ -816,6 +1074,8 @@ bool init_public_sem (Automat* au, vector<char>* input){
             case 1: {
                 if (c == 'u') {
                     state = 2;
+                    input->erase (input->begin ());
+                    --i;
                 }
                 else {
                     return false;
@@ -826,6 +1086,8 @@ bool init_public_sem (Automat* au, vector<char>* input){
             case 2: {
                 if (c == 'b') {
                     state = 3;
+                    input->erase (input->begin ());
+                    --i;
                 }
                 else {
                     return false;
@@ -837,6 +1099,8 @@ bool init_public_sem (Automat* au, vector<char>* input){
             case 3: {
                 if (c == 'l') {
                     state = 4;
+                    input->erase (input->begin ());
+                    --i;
                 }
                 else {
                     return false;
@@ -848,6 +1112,8 @@ bool init_public_sem (Automat* au, vector<char>* input){
             case 4: {
                 if (c == 'i') {
                     state = 5;
+                    input->erase (input->begin ());
+                    --i;
                 }
                 else {
                     return false;
@@ -859,6 +1125,8 @@ bool init_public_sem (Automat* au, vector<char>* input){
             case 5: {
                 if (c == 'c') {
                     state = 5;
+                    input->erase (input->begin ());
+                    --i;
                     return true;
                 }
                 else {
@@ -868,7 +1136,7 @@ bool init_public_sem (Automat* au, vector<char>* input){
                 break;
 
         }
-        --i;
+
     }
 
 }
@@ -1381,6 +1649,7 @@ bool init_charNb_sem (Automat* au, vector<char>* input, bool isDeclaration) {
             }
                 break;
         }
+        --i;
     }
 
 }
@@ -1546,6 +1815,7 @@ bool init_floatNb_sem (Automat* au, vector<char>* input) {
             }
                 break;
         }
+        --i;
 
         digits_counter++;
     }
@@ -1884,7 +2154,6 @@ int init_if (Automat* au, vector<char> input) {
 }
 
 
-
 int init_array (Automat* au, vector<char> input) {
 
     int state = 0;
@@ -1901,28 +2170,18 @@ int init_array (Automat* au, vector<char> input) {
 
             case 0: {
                 if (init_int (input)) {
-                    init_int_sem (au, &input);
-
-                    for (char c : input) {
-                        cout << c << endl;
-                    }
-
                     state = 1;
                 }
                 else if (init_double (input)) {
-                    init_double_sem (au, &input);
                     state = 1;
                 }
                 else if (init_float (input)) {
-                    init_float_sem (au, &input);
                     state = 1;
                 }
                 else if (init_char (input)) {
-                    init_char_sem (au, &input);
                     state = 1;
                 }
                 else if (init_string (input)) {
-                    init_string_sem (au, &input);
                     state = 1;
                 }
                 else {
@@ -1933,7 +2192,6 @@ int init_array (Automat* au, vector<char> input) {
 
             case 1: {
                 if (init_object(input) > -1) {
-                    init_object_sem (au, &input);
 
                     cout<<endl;
 
@@ -2003,14 +2261,9 @@ int init_array (Automat* au, vector<char> input) {
                     state = 6;
                     curvedBracket_counter++;
                 }
-                else if (curvedBracket_counter > 0) {
-                    if (init_object (input)) {
-                        return i;
-                    }
-                }
                 else if (curvedBracket_counter == 0) {
+                    //if bracket open then check for object and get its value from map
                     init_object(input);
-
                 }
                 else if (c == '}') {
                     state = 6;
@@ -2042,10 +2295,10 @@ bool init_array_sem (Automat* au, vector<char>* input) {
     int state = 0;
     char c;
     int bracket_counter = 0;
+    int curvedBracket_counter = 0;
 
     for (int i = 0; i < input->size (); i++) {
         c = (*input)[i];
-        input->erase (input->begin ());
         cout << endl;
         cout << "Entered array" << endl;
         cout << c;
@@ -2053,41 +2306,37 @@ bool init_array_sem (Automat* au, vector<char>* input) {
 
             case 0: {
                 if (init_int (*input)) {
-                    init_int_sem (au, input);
                     state = 1;
                 }
                 else if (init_double (*input)) {
-                    init_double_sem (au, input);
                     state = 1;
                 }
                 else if (init_float (*input)) {
-                    init_float_sem (au, input);
                     state = 1;
                 }
                 else if (init_char (*input)) {
-                    init_char_sem (au, input);
                     state = 1;
                 }
                 else if (init_string (*input)) {
-                    init_string_sem (au, input);
                     state = 1;
                 }
                 else {
-                    return -1;
+                    return false;
                 }
             }
                 break;
 
             case 1: {
-                if (init_object (*input) > -1) {
-                    init_object_sem (au, input);
+                if (init_object(*input) > -1) {
+
                     state = 1;
                 }
                 else if (c == '[') {
                     state = 2;
+                    bracket_counter++;
                 }
                 else {
-                    return -1;
+                    return false;
                 }
             }
                 break;
@@ -2102,9 +2351,10 @@ bool init_array_sem (Automat* au, vector<char>* input) {
                 }
                 else if (c == ']') {
                     state = 4;
+                    bracket_counter--;
                 }
                 else {
-                    return -1;
+                    return false;
                 }
 
             }
@@ -2114,9 +2364,10 @@ bool init_array_sem (Automat* au, vector<char>* input) {
             case 3: {
                 if (c == ']') {
                     state = 4;
+                    bracket_counter--;
                 }
                 else {
-                    return -1;
+                    return false;
                 }
             }
                 break;
@@ -2129,7 +2380,7 @@ bool init_array_sem (Automat* au, vector<char>* input) {
                     state = 5;
                 }
                 else {
-                    return -1;
+                    return false;
                 }
 
             }
@@ -2138,22 +2389,17 @@ bool init_array_sem (Automat* au, vector<char>* input) {
             case 5: {
                 if (c == '{') {
                     state = 6;
-                    bracket_counter++;
+                    curvedBracket_counter++;
                 }
-                else if (bracket_counter > 0) {
-                    if (init_object (*input)) {
-                        return i;
-                    }
-                }
-                else if (bracket_counter == 0) {
-                    init_object (*input);
-
+                else if (curvedBracket_counter == 0) {
+                    //if bracket open then check for object and get its value from map
+                    init_object(*input);
                 }
                 else if (c == '}') {
                     state = 6;
                 }
                 else {
-                    return -1;
+                    return false;
                 }
 
             }
@@ -2161,14 +2407,13 @@ bool init_array_sem (Automat* au, vector<char>* input) {
 
             case 6: {
                 if (c == ';') {
-                    return i;
+                    return true;
                 }
                 else {
-                    return -1;
+                    return false;
                 }
             }
         }
-        --i;
     }
 
     return -1;
@@ -2230,6 +2475,7 @@ bool init_char_sem (Automat* au, vector<char>* input) {
             }
                 break;
         }
+        --i;
     }
 
 }
@@ -2302,6 +2548,7 @@ bool init_float_sem (Automat* au, vector<char>* input) {
                 break;
 
         }
+        --i;
     }
 
 }
@@ -2314,6 +2561,7 @@ int init_float (vector<char> input) {
 
     for (int i = 0; i < input.size (); i++) {
         c = (input)[i];
+        cout<<c;
 
         switch (state) {
 
@@ -2456,6 +2704,7 @@ bool init_double_sem (Automat* au, vector<char>* input) {
                 break;
 
         }
+        --i;
     }
 
 
@@ -2761,6 +3010,7 @@ bool init_string_sem (Automat* au, vector<char>* input) {
                 break;
 
         }
+        --i;
     }
 
 }
@@ -2773,15 +3023,19 @@ bool init_intNb_sem (Automat* au, vector<char>* input) {
 
     for (int i = 0; i < input->size (); i++) {
         d = (*input)[i];
-        input->erase (input->begin ());
+
 
         switch (state) {
 
             case 0: {
                 if (isdigit (d)) {
+                    input->erase (input->begin ());
+                    --i;
                     state = 0;
                 }
                 else if (d == ';') {
+                    input->erase (input->begin ());
+                    --i;
                     return true;
                 }
                 else {
@@ -2792,7 +3046,7 @@ bool init_intNb_sem (Automat* au, vector<char>* input) {
                 break;
 
         }
-        --i;
+
     }
     return false;
 
@@ -2836,12 +3090,13 @@ bool init_object_sem (Automat* au, vector<char>* input) {
 
     for (int i = 0; i < input->size (); i++) {
         c = (*input)[i];
-        input->erase (input->begin ());
 
         switch (state) {
 
             case 0: {
                 if (isalpha (c)) {
+                    input->erase (input->begin ());
+                    --i;
                     state = 1;
                 }
                 else {
@@ -2851,9 +3106,13 @@ bool init_object_sem (Automat* au, vector<char>* input) {
                 break;
             case 1: {
                 if (isalpha (c) || isdigit (c)) {
+                    input->erase (input->begin ());
+                    --i;
                     state = 1;
                 }
                 else if (checkIfRegex(c, "[];=")) {
+                    input->erase (input->begin ());
+                    --i;
                     return true;
                 }
                 else if (c == ' ') {
@@ -2863,7 +3122,7 @@ bool init_object_sem (Automat* au, vector<char>* input) {
             }
                 break;
         }
-        --i;
+
     }
     return false;
 
@@ -3056,61 +3315,22 @@ bool init_int_sem (Automat* au, vector<char>* input) {
     int state = 0;
     char c;
     //starts with default first element
-    char prev = (*input)[0];
-    char next;
 
-    for (int i = 0; i < input->size (); i++) {
-        c = (*input)[i];
-        //gets next element to save in automat
-        if(i + 1 < input->size()){
-            next = (*input)[i + 1];
+        for(int i = 0; i < *au->states; i++){
+            c = (*input)[i];
+            //gets next element to save in automat
+
+            input->erase (input->begin ());
+
+            if(!checkIfRegex(c, au->delta->at(i)->current)){
+                return false;
+            }
+
+            i--;
         }
-
-        input->erase (input->begin ());
-
-
-        switch (state) {
-
-            case 0: {
-                if (c == 'i') {
-                    state = 1;
-                }
-                else {
-                    return false;
-                }
-
-            }
-                break;
-            case 1: {
-                if (c == 'n') {
-                    state = 2;
-                }
-                else {
-                    return false;
-                }
-
-            }
-                break;
-            case 2: {
-                if (c == 't') {
-                    state = 3;
-                    return true;
-                }
-                else {
-                    return false;
-                }
-
-            }
-                break;
-        }
-        prev = c;
-        i--;
-    }
-
+        return true;
 
 }
-
-
 
 bool init_main_sem (Automat* au, vector<char>* input) {
 
