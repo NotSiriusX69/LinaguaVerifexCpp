@@ -1,0 +1,3 @@
+C:/D_Drive/Data_Saves/1-Projects/CLion (C++)/Lingua-Verifex/cmake-build-debug/CMakeFiles/Lingua_Verifex.dir
+C:/D_Drive/Data_Saves/1-Projects/CLion (C++)/Lingua-Verifex/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/D_Drive/Data_Saves/1-Projects/CLion (C++)/Lingua-Verifex/cmake-build-debug/CMakeFiles/rebuild_cache.dir

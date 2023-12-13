@@ -1,0 +1,10 @@
+# ninja log v5
+6	470	7241318499677292	build.ninja	1c44cab0713f1b70
+63	1121	7241318277152831	CMakeFiles/Lingua_Verifex.dir/Classes/Protection.cpp.obj	edbb5d7281aea9f6
+40	1552	7241318281423228	CMakeFiles/Lingua_Verifex.dir/Classes/Variables.cpp.obj	dedbb2fc1833f35f
+122	1828	7241318284223262	CMakeFiles/Lingua_Verifex.dir/Classes/Insersion.cpp.obj	23cc4c778022f2aa
+14	2417	7241318290103897	CMakeFiles/Lingua_Verifex.dir/main.cpp.obj	31346db37599fab1
+164	1347	7241317943734764	CMakeFiles/Lingua_Verifex.dir/Classes/Automat.cpp.obj	6d524973a008bb7
+72	1506	7241317945301313	CMakeFiles/Lingua_Verifex.dir/Classes/utilities.cpp.obj	bb90a40e3ca02809
+5	473	7241318499677292	build.ninja	1c44cab0713f1b70
+9	630	7241318506743954	Lingua_Verifex.exe	242309a43bd2cb21
