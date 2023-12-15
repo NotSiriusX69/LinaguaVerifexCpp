@@ -1,4 +1,4 @@
-#include "Automat.h";
+#include "Declarations/Automat.h";
 
 int const maxNumber = 10;
 

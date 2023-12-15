@@ -1,3 +1,4 @@
+/*
 //general include
 #include <iostream>
 #include <fstream>
@@ -80,3 +81,4 @@ void sendResponse (string file, json data) {
 	//reset values after sending response
 	resetValues (file, data);
 }
+*/
